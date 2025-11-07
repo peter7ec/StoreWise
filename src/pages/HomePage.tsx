@@ -1,5 +1,5 @@
-import React from "react";
+import { Box } from "@mui/material";
 
 export default function HomePage() {
-  return <div>home</div>;
+  return <Box>Üdvözöljük a StoreWise-on!</Box>;
 }

@@ -1,19 +1,28 @@
-import { Box, Container } from "@mui/material";
+import { Box } from "@mui/material";
 import { Outlet } from "react-router";
+import Header from "../components/Header";
 
 export default function MainLayout() {
   return (
-    <Container maxWidth="md" disableGutters sx={{ py: 3 }}>
+    <Box
+      sx={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        minHeight: "100vh",
+        p: 0,
+        m: 0,
+      }}
+    >
+      <Header />
       <Box
-        component="header"
-        sx={{ mb: 2, p: 2, bgcolor: "grey.100", borderRadius: 1 }}
+        sx={{
+          m: 2,
+        }}
       >
-        Header
-      </Box>
-
-      <Box sx={{ padding: 20, bgcolor: "primary.light", borderRadius: 1 }}>
         <Outlet />
       </Box>
-    </Container>
+    </Box>
   );
 }
