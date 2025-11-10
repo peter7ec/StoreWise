@@ -12,8 +12,8 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
+import { Link } from "react-router";
 
-const pages = ["Products", "Pricing", "Blog"];
 const settings = ["Profile", "Logout"];
 
 function Header() {
@@ -89,11 +89,26 @@ function Header() {
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: "block", md: "none" } }}
             >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: "center" }}>{page}</Typography>
-                </MenuItem>
-              ))}
+              <MenuItem key={"lists"} onClick={handleCloseNavMenu}>
+                <Link
+                  to="/lists"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <Typography sx={{ textAlign: "center" }}>
+                    {"Listák"}
+                  </Typography>
+                </Link>
+              </MenuItem>
+              <MenuItem key={"newLists"} onClick={handleCloseNavMenu}>
+                <Link
+                  to="/new-list"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <Typography sx={{ textAlign: "center" }}>
+                    {"Új lista"}
+                  </Typography>
+                </Link>
+              </MenuItem>
             </Menu>
           </Box>
           <Typography
@@ -115,15 +130,30 @@ function Header() {
             StoreWise
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: "white", display: "block" }}
+            <Button
+              key={"new-list"}
+              onClick={handleCloseNavMenu}
+              sx={{ my: 2, color: "white", display: "block" }}
+            >
+              <Link
+                to="/new-list"
+                style={{ textDecoration: "none", color: "inherit" }}
               >
-                {page}
-              </Button>
-            ))}
+                {"Új lista"}
+              </Link>
+            </Button>
+            <Button
+              key={"lists"}
+              onClick={handleCloseNavMenu}
+              sx={{ my: 2, color: "white", display: "block" }}
+            >
+              <Link
+                to="/new-list"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                {"Listák"}
+              </Link>
+            </Button>
           </Box>
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
