@@ -13,9 +13,10 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 function Header() {
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
 
   const avatarContent = React.useMemo(() => {
@@ -48,6 +49,10 @@ function Header() {
   };
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
+  };
+
+  const handleLogoClick = () => {
+    navigate("/");
   };
 
   const handleCloseNavMenu = () => {
@@ -94,11 +99,13 @@ function Header() {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
+
           <Typography
             variant="h6"
             noWrap
             component="a"
             href="#app-bar-with-responsive-menu"
+            onClick={handleLogoClick}
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -161,11 +168,13 @@ function Header() {
               </MenuItem>
             </Menu>
           </Box>
+
           <Typography
             variant="h5"
             noWrap
             component="a"
             href="#app-bar-with-responsive-menu"
+            onClick={handleLogoClick}
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },

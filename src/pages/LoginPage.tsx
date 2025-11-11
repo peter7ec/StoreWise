@@ -5,14 +5,17 @@ import { Box, Button, FormLabel, TextField, Typography } from "@mui/material";
 import TopAlert from "../components/TopAlert";
 import GoogleIcon from "@mui/icons-material/Google";
 import {
+  getRedirectResult,
   GoogleAuthProvider,
+  onAuthStateChanged,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
 } from "firebase/auth";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { auth, db } from "../services/FireBaseConfig";
 import { useNavigate } from "react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -27,23 +30,61 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then(async (result) => {
+        console.log("Redirect result, user:", result);
+        if (result && result.user) {
+          const userRef = doc(db, "users", result.user.uid);
+          const userSnap = await getDoc(userRef);
+
+          if (!userSnap.exists()) {
+            await setDoc(userRef, {
+              name: result.user.displayName,
+              email: result.user.email,
+              createdAt: serverTimestamp(),
+            });
+          }
+        }
+      })
+      .catch((err) => {
+        setFirebaseError("Nem sikerült a Google belépés (redirect után)!");
+        console.error(err);
+      });
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigate("/");
+      }
+    });
+    return () => unsubscribe();
+  }, [navigate]);
+
   const handleGoogleLogin = async () => {
     setFirebaseError("");
     try {
+      const isMobile =
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        );
       const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
 
-      const userRef = doc(db, "users", result.user.uid);
-      const userSnap = await getDoc(userRef);
+      if (isMobile) {
+        await signInWithRedirect(auth, provider);
+        return;
+      } else {
+        const result = await signInWithPopup(auth, provider);
 
-      if (!userSnap.exists()) {
-        await setDoc(userRef, {
-          name: result.user.displayName,
-          email: result.user.email,
-          createdAt: serverTimestamp(),
-        });
+        const userRef = doc(db, "users", result.user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+          await setDoc(userRef, {
+            name: result.user.displayName,
+            email: result.user.email,
+            createdAt: serverTimestamp(),
+          });
+        }
       }
-
       navigate("/");
     } catch (err) {
       setFirebaseError("Nem sikerült a Google belépés!");

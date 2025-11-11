@@ -8,14 +8,16 @@ import {
   updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  onAuthStateChanged,
+  getRedirectResult,
 } from "firebase/auth";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
 import { FirebaseError } from "firebase/app";
 import { auth, db } from "../services/FireBaseConfig";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TopAlert from "../components/TopAlert";
 import { useNavigate } from "react-router";
-
 export default function RegisterPage() {
   const navigate = useNavigate();
   const {
@@ -28,9 +30,45 @@ export default function RegisterPage() {
 
   const [firebaseError, setFirebaseError] = useState<string>();
 
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then(async (result) => {
+        if (result && result.user) {
+          const userRef = doc(db, "users", result.user.uid);
+          const userSnap = await getDoc(userRef);
+
+          if (!userSnap.exists()) {
+            await setDoc(userRef, {
+              name: result.user.displayName,
+              email: result.user.email,
+              createdAt: serverTimestamp(),
+            });
+          }
+        }
+      })
+      .catch((err) => {
+        setFirebaseError("Nem sikerült a Google belépés (redirect után)!");
+        console.error(err);
+      });
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigate("/");
+      }
+    });
+    return () => unsubscribe();
+  }, [navigate]);
+
   const handleGoogleRegister = async () => {
     try {
+      const isMobile =
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        );
       const provider = new GoogleAuthProvider();
+      if (isMobile) {
+        await signInWithRedirect(auth, provider);
+        return;
+      }
       const result = await signInWithPopup(auth, provider);
 
       await setDoc(doc(db, "users", result.user.uid), {
