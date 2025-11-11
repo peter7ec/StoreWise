@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useAuth } from "../services/authContext";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -12,11 +13,30 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-import { Link } from "react-router";
-
-const settings = ["Profile", "Logout"];
+import { Link, useNavigate } from "react-router";
 
 function Header() {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  const avatarContent = React.useMemo(() => {
+    if (!user) {
+      return <Avatar />;
+    }
+
+    if (
+      user.providerData?.some((p) => p.providerId === "google.com") &&
+      user.photoURL
+    ) {
+      return <Avatar alt={user.displayName || ""} src={user.photoURL} />;
+    }
+
+    const initial = user.displayName
+      ? user.displayName.charAt(0).toUpperCase()
+      : "";
+    return <Avatar alt={user.displayName ?? undefined} children={initial} />;
+  }, [user]);
+
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -31,6 +51,10 @@ function Header() {
     setAnchorElUser(event.currentTarget);
   };
 
+  const handleLogoClick = () => {
+    navigate("/");
+  };
+
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
@@ -39,16 +63,49 @@ function Header() {
     setAnchorElUser(null);
   };
 
+  const userMenuItems = !user
+    ? [
+        <MenuItem key="login" onClick={handleCloseUserMenu}>
+          <Link
+            to="/login"
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            <Typography sx={{ textAlign: "center" }}>Bejelentkezés</Typography>
+          </Link>
+        </MenuItem>,
+        <MenuItem key="register" onClick={handleCloseUserMenu}>
+          <Link
+            to="/register"
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            <Typography sx={{ textAlign: "center" }}>Regisztráció</Typography>
+          </Link>
+        </MenuItem>,
+      ]
+    : [
+        <MenuItem
+          key="logout"
+          onClick={() => {
+            handleCloseUserMenu();
+            logout();
+          }}
+        >
+          <Typography sx={{ textAlign: "center" }}>Kijelentkezés</Typography>
+        </MenuItem>,
+      ];
+
   return (
     <AppBar position="static" sx={{ width: "100%" }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
+
           <Typography
             variant="h6"
             noWrap
             component="a"
             href="#app-bar-with-responsive-menu"
+            onClick={handleLogoClick}
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -111,11 +168,13 @@ function Header() {
               </MenuItem>
             </Menu>
           </Box>
+
           <Typography
             variant="h5"
             noWrap
             component="a"
             href="#app-bar-with-responsive-menu"
+            onClick={handleLogoClick}
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
@@ -156,9 +215,9 @@ function Header() {
             </Button>
           </Box>
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
+            <Tooltip title="Fiók">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                {avatarContent}
               </IconButton>
             </Tooltip>
             <Menu
@@ -177,13 +236,7 @@ function Header() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: "center" }}>
-                    {setting}
-                  </Typography>
-                </MenuItem>
-              ))}
+              {userMenuItems}
             </Menu>
           </Box>
         </Toolbar>
