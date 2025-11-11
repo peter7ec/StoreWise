@@ -17,6 +17,7 @@ createRoot(document.getElementById("root")!).render(
       <AuthProvider>
         <ThemeProvider theme={theme}>
           <Routes>
+            <Route path="/__/auth/*" element={null} />
             <Route element={<MainLayout />}>
               <Route path="/" index element={<HomePage />} />
               <Route

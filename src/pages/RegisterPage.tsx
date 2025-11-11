@@ -1,5 +1,4 @@
 import { Box, Button, FormLabel, TextField, Typography } from "@mui/material";
-import GoogleIcon from "@mui/icons-material/Google";
 import { useForm } from "react-hook-form";
 import { registrationSchema, type RegisterUser } from "../services/authSchemes";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,17 +6,15 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
   GoogleAuthProvider,
-  signInWithPopup,
-  signInWithRedirect,
-  onAuthStateChanged,
-  getRedirectResult,
+  signInWithCredential,
 } from "firebase/auth";
-import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { FirebaseError } from "firebase/app";
 import { auth, db } from "../services/FireBaseConfig";
 import { useEffect, useState } from "react";
 import TopAlert from "../components/TopAlert";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useAuth } from "../services/authContext";
 export default function RegisterPage() {
   const navigate = useNavigate();
   const {
@@ -28,61 +25,68 @@ export default function RegisterPage() {
     resolver: zodResolver(registrationSchema),
   });
 
+  const { user, loading } = useAuth();
   const [firebaseError, setFirebaseError] = useState<string>();
 
   useEffect(() => {
-    getRedirectResult(auth)
-      .then(async (result) => {
-        if (result && result.user) {
-          const userRef = doc(db, "users", result.user.uid);
-          const userSnap = await getDoc(userRef);
-
-          if (!userSnap.exists()) {
-            await setDoc(userRef, {
-              name: result.user.displayName,
-              email: result.user.email,
-              createdAt: serverTimestamp(),
-            });
-          }
-        }
-      })
-      .catch((err) => {
-        setFirebaseError("Nem sikerült a Google belépés (redirect után)!");
-        console.error(err);
-      });
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        navigate("/");
-      }
-    });
-    return () => unsubscribe();
-  }, [navigate]);
-
-  const handleGoogleRegister = async () => {
-    try {
-      const isMobile =
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent
-        );
-      const provider = new GoogleAuthProvider();
-      if (isMobile) {
-        await signInWithRedirect(auth, provider);
-        return;
-      }
-      const result = await signInWithPopup(auth, provider);
-
-      await setDoc(doc(db, "users", result.user.uid), {
-        name: result.user.displayName,
-        email: result.user.email,
-        createdAt: serverTimestamp(),
-      });
-
+    if (user) {
       navigate("/");
-    } catch (err) {
-      console.error(err);
+    }
+  }, [user, navigate]);
+
+  const handleGoogleSignIn = async (response: { credential?: string }) => {
+    if (response.credential) {
+      console.log("Google bejelentkezés sikeres, token fogadva.");
+      setFirebaseError("");
+
+      const googleCredential = GoogleAuthProvider.credential(
+        response.credential
+      );
+
+      try {
+        await signInWithCredential(auth, googleCredential);
+        console.log("Firebase signInWithCredential sikeres.");
+      } catch (error) {
+        console.error("Firebase signInWithCredential hiba:", error);
+        if (error instanceof FirebaseError) {
+          setFirebaseError(`Hiba a Google fiókkal: ${error.code}`);
+        } else {
+          setFirebaseError("Ismeretlen hiba történt a bejelentkezés során.");
+        }
+      }
+    } else {
+      setFirebaseError("Google nem adott vissza hitelesítő adatot.");
+      console.error(
+        "A Google response objektum nem tartalmazta a 'credential' mezőt.",
+        response
+      );
     }
   };
 
+  useEffect(() => {
+    const initializeGoogleButton = () => {
+      const googleButtonDiv = document.getElementById("googleSignInButton");
+
+      if (window.google && googleButtonDiv) {
+        window.google.accounts.id.initialize({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+          callback: handleGoogleSignIn,
+        });
+
+        window.google.accounts.id.renderButton(googleButtonDiv, {
+          type: "standard",
+          theme: "outline",
+          size: "large",
+          text: "signup_with",
+          shape: "rectangular",
+        });
+      } else {
+        setTimeout(initializeGoogleButton, 100);
+      }
+    };
+
+    initializeGoogleButton();
+  }, []);
   const onSubmit = async (data: RegisterUser) => {
     setFirebaseError("");
     try {
@@ -114,6 +118,9 @@ export default function RegisterPage() {
     }
   };
 
+  if (loading) {
+    return <div>Betöltés...</div>;
+  }
   return (
     <div>
       <Box
@@ -168,12 +175,13 @@ export default function RegisterPage() {
         <Button variant="contained" type="submit">
           Regisztráció
         </Button>
-        <Button variant="outlined" type="submit" onClick={handleGoogleRegister}>
-          <Box>
-            <Typography>Google Regisztráció</Typography>
-            <GoogleIcon />
-          </Box>
-        </Button>
+        <Box id="googleSignInButton" sx={{ alignSelf: "center" }}></Box>
+        <Typography
+          variant="caption"
+          sx={{ textAlign: "center", color: "blue" }}
+        >
+          Már regisztrált? <Link to="/login">Jelentkezzen be!</Link>
+        </Typography>
       </Box>
     </div>
   );
