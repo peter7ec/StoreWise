@@ -20,7 +20,6 @@ function Header() {
 
   const avatarContent = React.useMemo(() => {
     if (!user) {
-      // Nincs bejelentkezve, ember ikon helyett is használhatod az Avatar-t default elemmel
       return <Avatar />;
     }
 
@@ -28,11 +27,9 @@ function Header() {
       user.providerData?.some((p) => p.providerId === "google.com") &&
       user.photoURL
     ) {
-      // Google user: képet mutat
       return <Avatar alt={user.displayName || ""} src={user.photoURL} />;
     }
 
-    // Email/password user, név alapján kezdőbetű
     const initial = user.displayName
       ? user.displayName.charAt(0).toUpperCase()
       : "";
