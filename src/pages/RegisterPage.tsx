@@ -1,7 +1,7 @@
 import { Box, Button, FormLabel, TextField, Typography } from "@mui/material";
 import GoogleIcon from "@mui/icons-material/Google";
 import { useForm } from "react-hook-form";
-import registrationSchema, { type RegisterUser } from "../services/authSchemes";
+import { registrationSchema, type RegisterUser } from "../services/authSchemes";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   createUserWithEmailAndPassword,
@@ -56,7 +56,6 @@ export default function RegisterPage() {
 
       await updateProfile(result.user, { displayName: data.name });
 
-      console.log(result.user.uid);
       await setDoc(doc(db, "users", result.user.uid), {
         name: data.name,
         email: data.email,
@@ -64,7 +63,6 @@ export default function RegisterPage() {
       });
     } catch (err) {
       if (err instanceof FirebaseError) {
-        console.log(err.code);
         if (err.code === "auth/email-already-in-use") {
           setFirebaseError("Emailcím már foglalt!");
         } else if (err.code === "auth/weak-password") {
@@ -75,7 +73,6 @@ export default function RegisterPage() {
       } else {
         setFirebaseError("Ismeretlen hiba történt.");
       }
-      console.log(err);
     }
   };
 
