@@ -8,6 +8,8 @@ import TopAlert from "../components/TopAlert";
 import { useAuth } from "../services/authContext";
 import getListData from "../services/getListData";
 import type { List } from "../types/listsType";
+import ListCards from "../components/ListCards";
+import { deleteList } from "../services/deleteList";
 
 export default function ListsPage() {
   const { user } = useAuth();
@@ -18,6 +20,18 @@ export default function ListsPage() {
 
   const handleOpen = () => setIsOpen(true);
   const handleClose = () => setIsOpen(false);
+
+  const handleDeleteClick = (name: string, listId: string) => {
+    if (
+      window.confirm(`Biztosan törölni szeretnéd a(z) "${name}" nevű listát?`)
+    ) {
+      deleteList(listId);
+      setPopUpMessage("");
+      setListData(listData.filter((list) => list.id != listId));
+      setPopUpMessage("Sikeresen törölve!");
+      setPopUpSeverity("success");
+    }
+  };
 
   useEffect(() => {
     const fetchListData = async () => {
@@ -50,14 +64,22 @@ export default function ListsPage() {
         Listák
       </Typography>
       <Container
-        maxWidth="lg"
-        sx={{ display: "flex", alignItems: "center", flexDirection: "column" }}
+        maxWidth="xl"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
+          p: 0,
+        }}
       >
         <Button
           onClick={handleOpen}
           fullWidth
           variant="contained"
           color="primary"
+          sx={{
+            width: "65vw",
+          }}
         >
           Új lista
         </Button>
@@ -77,6 +99,13 @@ export default function ListsPage() {
             severity={popUpSeverity || "error"}
           />
         )}
+        {listData.map((list) => (
+          <ListCards
+            key={list.id}
+            data={list}
+            deleteClick={handleDeleteClick}
+          />
+        ))}
       </Container>
     </Container>
   );
