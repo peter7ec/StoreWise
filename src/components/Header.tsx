@@ -13,7 +13,7 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 
 function Header() {
   const navigate = useNavigate();
@@ -51,8 +51,8 @@ function Header() {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleLogoClick = () => {
-    navigate("/");
+  const handleLinkClick = (link: string) => {
+    navigate(link);
   };
 
   const handleCloseNavMenu = () => {
@@ -66,20 +66,20 @@ function Header() {
   const userMenuItems = !user
     ? [
         <MenuItem key="login" onClick={handleCloseUserMenu}>
-          <Link
-            to="/login"
-            style={{ textDecoration: "none", color: "inherit" }}
+          <Typography
+            onClick={() => handleLinkClick("/login")}
+            sx={{ textAlign: "center" }}
           >
-            <Typography sx={{ textAlign: "center" }}>Bejelentkezés</Typography>
-          </Link>
+            Bejelentkezés
+          </Typography>
         </MenuItem>,
         <MenuItem key="register" onClick={handleCloseUserMenu}>
-          <Link
-            to="/register"
-            style={{ textDecoration: "none", color: "inherit" }}
+          <Typography
+            onClick={() => handleLinkClick("/register")}
+            sx={{ textAlign: "center" }}
           >
-            <Typography sx={{ textAlign: "center" }}>Regisztráció</Typography>
-          </Link>
+            Regisztráció
+          </Typography>
         </MenuItem>,
       ]
     : [
@@ -105,7 +105,7 @@ function Header() {
             noWrap
             component="a"
             href="#app-bar-with-responsive-menu"
-            onClick={handleLogoClick}
+            onClick={() => handleLinkClick("/")}
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -147,24 +147,20 @@ function Header() {
               sx={{ display: { xs: "block", md: "none" } }}
             >
               <MenuItem key={"lists"} onClick={handleCloseNavMenu}>
-                <Link
-                  to="/lists"
-                  style={{ textDecoration: "none", color: "inherit" }}
+                <Typography
+                  onClick={() => handleLinkClick("/lists")}
+                  sx={{ textAlign: "center" }}
                 >
-                  <Typography sx={{ textAlign: "center" }}>
-                    {"Listák"}
-                  </Typography>
-                </Link>
+                  {"Listák"}
+                </Typography>
               </MenuItem>
               <MenuItem key={"newLists"} onClick={handleCloseNavMenu}>
-                <Link
-                  to="/new-list"
-                  style={{ textDecoration: "none", color: "inherit" }}
+                <Typography
+                  onClick={() => handleLinkClick("/new-list")}
+                  sx={{ textAlign: "center" }}
                 >
-                  <Typography sx={{ textAlign: "center" }}>
-                    {"Új lista"}
-                  </Typography>
-                </Link>
+                  {"Új lista"}
+                </Typography>
               </MenuItem>
             </Menu>
           </Box>
@@ -174,7 +170,7 @@ function Header() {
             noWrap
             component="a"
             href="#app-bar-with-responsive-menu"
-            onClick={handleLogoClick}
+            onClick={() => handleLinkClick("/")}
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
@@ -191,27 +187,23 @@ function Header() {
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             <Button
               key={"new-list"}
-              onClick={handleCloseNavMenu}
+              onClick={() => {
+                handleCloseNavMenu();
+                handleLinkClick("/new-list");
+              }}
               sx={{ my: 2, color: "white", display: "block" }}
             >
-              <Link
-                to="/new-list"
-                style={{ textDecoration: "none", color: "inherit" }}
-              >
-                {"Új lista"}
-              </Link>
+              {"Új lista"}
             </Button>
             <Button
               key={"lists"}
-              onClick={handleCloseNavMenu}
+              onClick={() => {
+                handleCloseNavMenu();
+                handleLinkClick("/lists");
+              }}
               sx={{ my: 2, color: "white", display: "block" }}
             >
-              <Link
-                to="/new-list"
-                style={{ textDecoration: "none", color: "inherit" }}
-              >
-                {"Listák"}
-              </Link>
+              {"Listák"}
             </Button>
           </Box>
           <Box sx={{ flexGrow: 0 }}>
