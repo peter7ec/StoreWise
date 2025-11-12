@@ -36,7 +36,6 @@ export default function RegisterPage() {
 
   const handleGoogleSignIn = async (response: { credential?: string }) => {
     if (response.credential) {
-      console.log("Google bejelentkezés sikeres, token fogadva.");
       setFirebaseError("");
 
       const googleCredential = GoogleAuthProvider.credential(
@@ -45,7 +44,6 @@ export default function RegisterPage() {
 
       try {
         await signInWithCredential(auth, googleCredential);
-        console.log("Firebase signInWithCredential sikeres.");
       } catch (error) {
         console.error("Firebase signInWithCredential hiba:", error);
         if (error instanceof FirebaseError) {

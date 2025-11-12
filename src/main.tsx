@@ -8,6 +8,8 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import { AuthProvider } from "./services/authProvider";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import ListsPage from "./pages/ListsPage";
+import { PrivateRoute } from "./components/PrivateRoute";
 
 const theme = createTheme();
 
@@ -36,6 +38,14 @@ createRoot(document.getElementById("root")!).render(
                   <ProtectedRoute>
                     <RegisterPage />
                   </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/lists"
+                element={
+                  <PrivateRoute>
+                    <ListsPage />
+                  </PrivateRoute>
                 }
               />
             </Route>
