@@ -10,6 +10,7 @@ import getListData from "../services/getListData";
 import type { List } from "../types/listsType";
 import ListCards from "../components/ListCards";
 import { deleteList } from "../services/deleteList";
+import EditListModal from "../components/EditListModal";
 
 export default function ListsPage() {
   const { user } = useAuth();
@@ -18,8 +19,21 @@ export default function ListsPage() {
   const [popUpSeverity, setPopUpSeverity] = useState<SeverityType>();
   const [listData, setListData] = useState<List[]>([]);
 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [listToEdit, setListToEdit] = useState<List | null>(null);
+
   const handleOpen = () => setIsOpen(true);
   const handleClose = () => setIsOpen(false);
+
+  const handleOpenEditModal = (list: List) => {
+    setListToEdit(list);
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setListToEdit(null);
+  };
 
   const handleDeleteClick = (name: string, listId: string) => {
     if (
@@ -41,7 +55,6 @@ export default function ListsPage() {
 
           if (fetchedData) {
             setListData(fetchedData);
-            console.log(fetchedData);
             if (fetchedData.length == 0) {
               setPopUpMessage("");
               setPopUpMessage("Még nem hozottlétre listákat!");
@@ -107,8 +120,19 @@ export default function ListsPage() {
             key={list.id}
             data={list}
             deleteClick={handleDeleteClick}
+            editClick={handleOpenEditModal}
           />
         ))}
+        {isEditModalOpen && listToEdit && (
+          <EditListModal
+            isOpen={isEditModalOpen}
+            handleClose={handleCloseEditModal}
+            targetData={listToEdit}
+            setListsData={setListData}
+            setPopUpMessage={setPopUpMessage}
+            setPopUpSeverity={setPopUpSeverity}
+          />
+        )}
       </Container>
     </Container>
   );

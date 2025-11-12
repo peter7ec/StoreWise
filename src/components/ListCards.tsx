@@ -13,9 +13,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 export default function ListCards({
   data,
   deleteClick,
+  editClick,
 }: {
   data: List;
   deleteClick: (name: string, listId: string) => void;
+  editClick: (list: List) => void;
 }) {
   function dateCustomFormatting(date: Date): string {
     const padStart = (value: number): string =>
@@ -52,7 +54,13 @@ export default function ListCards({
         <Divider sx={{ my: 2 }} />
 
         <Box display="flex" justifyContent="space-between">
-          <Button id="edit" size="small" variant="contained" color="primary">
+          <Button
+            id="edit"
+            size="small"
+            variant="contained"
+            color="primary"
+            onClick={() => editClick(data)}
+          >
             <EditIcon fontSize="small" />
           </Button>
           <Button
