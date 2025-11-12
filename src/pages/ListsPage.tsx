@@ -3,6 +3,8 @@ import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
 import NewListModal from "../components/NewListModal";
+import type { SeverityType } from "../components/TopAlert";
+import TopAlert from "../components/TopAlert";
 
 export default function ListsPage() {
   /* const { user } = useAuth(); */
@@ -10,6 +12,8 @@ export default function ListsPage() {
   const [isOpen, setIsOpen] = useState(false);
   const handleOpen = () => setIsOpen(true);
   const handleClose = () => setIsOpen(false);
+  const [popUpMessage, setPopUpMessage] = useState<string>();
+  const [popUpSeverity, setPopUpSeverity] = useState<SeverityType>();
 
   return (
     <Container maxWidth="xl">
@@ -38,7 +42,15 @@ export default function ListsPage() {
             handleOpen={handleOpen}
             isOpen={isOpen}
             setIsOpen={setIsOpen}
+            setPopUpMessage={setPopUpMessage}
+            setPopUpSeverity={setPopUpSeverity}
           ></NewListModal>
+        )}
+        {popUpMessage && (
+          <TopAlert
+            message={popUpMessage}
+            severity={popUpSeverity || "error"}
+          />
         )}
       </Container>
     </Container>

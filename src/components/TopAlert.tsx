@@ -1,7 +1,7 @@
 import { Alert, Box, Slide } from "@mui/material";
 import { useEffect, useState } from "react";
 
-type SeverityType = "error" | "warning" | "info" | "success";
+export type SeverityType = "error" | "warning" | "info" | "success";
 
 interface TopAlertProps {
   message: string;
