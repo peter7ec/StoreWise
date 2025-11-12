@@ -42,11 +42,13 @@ export default function ListsPage() {
           if (fetchedData) {
             setListData(fetchedData);
             console.log(fetchedData);
+            if (fetchedData.length == 0) {
+              setPopUpMessage("");
+              setPopUpMessage("Még nem hozottlétre listákat!");
+              setPopUpSeverity("warning");
+            }
           }
         } catch (error) {
-          setPopUpMessage("");
-          setPopUpMessage("Még nem hozottlétre listákat!");
-          setPopUpSeverity("info");
           console.error("Hiba történt a listaadatok lekérésekor:", error);
         }
       }
@@ -87,6 +89,7 @@ export default function ListsPage() {
           <NewListModal
             handleClose={handleClose}
             handleOpen={handleOpen}
+            setListsData={setListData}
             isOpen={isOpen}
             setIsOpen={setIsOpen}
             setPopUpMessage={setPopUpMessage}

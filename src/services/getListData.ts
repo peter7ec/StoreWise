@@ -4,13 +4,18 @@ import {
   query,
   Timestamp,
   where,
+  orderBy,
 } from "firebase/firestore";
 import { db } from "./FireBaseConfig";
 import type { List } from "../types/listsType";
 
 export default async function getListData(userId: string) {
   try {
-    const q = query(collection(db, "lists"), where("userId", "==", userId));
+    const q = query(
+      collection(db, "lists"),
+      where("userId", "==", userId),
+      orderBy("createdAt", "desc")
+    );
     const querySnapshot = await getDocs(q);
 
     const userLists = querySnapshot.docs.map((doc) => {
@@ -26,7 +31,7 @@ export default async function getListData(userId: string) {
 
     return userLists as List[];
   } catch (err) {
-    console.error(err);
+    console.error("Hiba a listák lekérdezése közben:", err);
   }
   return;
 }

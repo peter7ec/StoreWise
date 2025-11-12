@@ -7,6 +7,7 @@ import { addDoc, collection } from "firebase/firestore";
 import { useAuth } from "../services/authContext";
 import { db } from "../services/FireBaseConfig";
 import { type SeverityType } from "./TopAlert";
+import type { List } from "../types/listsType";
 
 const style = {
   position: "absolute",
@@ -23,10 +24,9 @@ const style = {
 export default function NewListModal({
   isOpen,
   handleClose,
-
   setPopUpMessage,
-
   setPopUpSeverity,
+  setListsData,
 }: {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -36,6 +36,7 @@ export default function NewListModal({
   setPopUpSeverity: React.Dispatch<
     React.SetStateAction<SeverityType | undefined>
   >;
+  setListsData: React.Dispatch<React.SetStateAction<List[]>>;
 }) {
   const { user } = useAuth();
 
@@ -52,12 +53,21 @@ export default function NewListModal({
     setPopUpSeverity("success");
 
     try {
-      await addDoc(collection(db, "lists"), {
+      const newList = await addDoc(collection(db, "lists"), {
         name: data.listName,
         createdAt: new Date(),
         userId: user?.uid,
       });
       setPopUpMessage("Lista sikeresen létrehozva!");
+      setListsData((prevLists) => [
+        {
+          name: data.listName,
+          createdAt: new Date(),
+          id: newList.id,
+          userId: user!.uid,
+        },
+        ...prevLists,
+      ]);
       handleClose();
     } catch (err) {
       setPopUpMessage(err as string);
