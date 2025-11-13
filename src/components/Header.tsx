@@ -97,14 +97,22 @@ function Header() {
     <AppBar position="static" sx={{ width: "100%" }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Box sx={{ display: { xs: "none", md: "block" } }}>
-            <img
-              src="/storewise-logo.png"
-              width={"50vw"}
-              style={{ marginRight: 20 }}
-              onClick={() => handleLinkClick("/")}
-            />
-          </Box>
+          <Box
+            component="img"
+            src="/storewise-logo.png"
+            alt="StoreWise logo"
+            onClick={() => handleLinkClick("/")}
+            sx={{
+              display: {
+                xs: "none",
+                md: "block",
+                height: 40,
+                width: "auto",
+
+                cursor: "pointer",
+              },
+            }}
+          />
           <Typography
             variant="h6"
             noWrap
@@ -113,6 +121,7 @@ function Header() {
             onClick={() => handleLinkClick("/")}
             sx={{
               mr: 2,
+              ml: 2,
               display: { xs: "none", md: "flex" },
               fontFamily: "monospace",
               fontWeight: 700,
