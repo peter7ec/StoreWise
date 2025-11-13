@@ -12,7 +12,6 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import AdbIcon from "@mui/icons-material/Adb";
 import { useNavigate } from "react-router";
 
 function Header() {
@@ -98,8 +97,14 @@ function Header() {
     <AppBar position="static" sx={{ width: "100%" }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
-
+          <Box sx={{ display: { xs: "none", md: "block" } }}>
+            <img
+              src="/storewise-logo.png"
+              width={"50vw"}
+              style={{ marginRight: 20 }}
+              onClick={() => handleLinkClick("/")}
+            />
+          </Box>
           <Typography
             variant="h6"
             noWrap
@@ -165,6 +170,14 @@ function Header() {
             </Menu>
           </Box>
 
+          <Box sx={{ display: { xs: "block", md: "none" } }}>
+            <img
+              src="/storewise-logo.png"
+              width={"40vw"}
+              style={{ marginRight: 20, marginTop: 5 }}
+              onClick={() => handleLinkClick("/")}
+            />
+          </Box>
           <Typography
             variant="h5"
             noWrap
