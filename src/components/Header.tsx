@@ -99,7 +99,7 @@ function Header() {
         <Toolbar disableGutters>
           <Box
             component="img"
-            src="/storewise-logo.png"
+            src="/storewise-logo2.png"
             alt="StoreWise logo"
             onClick={() => handleLinkClick("/")}
             sx={{
@@ -110,6 +110,7 @@ function Header() {
                 width: "auto",
 
                 cursor: "pointer",
+                filter: "drop-shadow(2px 2px 3px rgba(68, 68, 68, 0.5))",
               },
             }}
           />
@@ -179,14 +180,22 @@ function Header() {
             </Menu>
           </Box>
 
-          <Box sx={{ display: { xs: "block", md: "none" } }}>
-            <img
-              src="/storewise-logo.png"
-              width={"40vw"}
-              style={{ marginRight: 20, marginTop: 5 }}
-              onClick={() => handleLinkClick("/")}
-            />
-          </Box>
+          <Box
+            component="img"
+            src="/storewise-logo2.png"
+            alt="StoreWise logo"
+            onClick={() => handleLinkClick("/")}
+            sx={{
+              display: {
+                xs: "block",
+                md: "none",
+                height: 40,
+                width: "auto",
+                cursor: "pointer",
+                filter: "drop-shadow(2px 2px 3px rgba(68, 68, 68, 0.5))",
+              },
+            }}
+          />
           <Typography
             variant="h5"
             noWrap
@@ -194,7 +203,7 @@ function Header() {
             href="#app-bar-with-responsive-menu"
             onClick={() => handleLinkClick("/")}
             sx={{
-              mr: 2,
+              mx: 2,
               display: { xs: "flex", md: "none" },
               flexGrow: 1,
               fontFamily: "monospace",
